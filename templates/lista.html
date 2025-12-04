@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Minha Lista — PopScreen</title>
+
+<style>
+  :root{
+    --bg:#060608;
+    --panel: rgba(18,10,24,0.6);
+    --accent: #a855f7;
+    --accent-2: #6b21a8;
+    --muted: #bfa6dd;
+    --card-bg: rgba(255,255,255,0.03);
+    --glass: rgba(255,255,255,0.04);
+    --white: #f8f4ff;
+  }
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background: linear-gradient(180deg, #070607 0%, #0f0616 50%, #000000 100%);
+    font-family:"Poppins", system-ui;
+    color:var(--white);
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 28px;
+    background:rgba(6,6,6,0.6);
+    border-bottom:1px solid rgba(168,85,247,0.08);
+    position:sticky; top:0; z-index:10;
+    backdrop-filter:blur(6px);
+  }
+  .brand{ font-weight:700; color:var(--accent); font-size:1.25rem; }
+
+  header button{
+    padding:10px 16px;
+    background:var(--accent-2);
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  header button:hover{ background:var(--accent); }
+
+  .page{
+    max-width:1200px;
+    margin:26px auto;
+    padding:0 20px 80px;
+  }
+
+  h1{ font-size:1.9rem; }
+
+  .list-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(180px,1fr));
+    gap:22px;
+    margin-top:28px;
+  }
+
+  .card{
+    background:var(--card-bg);
+    border-radius:12px;
+    padding:10px;
+    border:1px solid rgba(168,85,247,0.06);
+    box-shadow:0 8px 25px rgba(0,0,0,0.5);
+    text-align:center;
+  }
+
+  .card img{
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    border-radius:8px;
+  }
+
+  .card h3{
+    font-size:1rem;
+    margin:10px 0 0px;
+  }
+  
+  /* NOVO: Estilo para informações adicionais */
+  .card small{
+      display:block;
+      color:var(--muted);
+      font-size:0.75rem;
+      margin-top:4px;
+      margin-bottom:8px; /* Espaço antes do botão */
+  }
+
+  .remove-btn{
+    margin-top:8px;
+    padding:8px 10px;
+    width:100%;
+    border:none;
+    border-radius:8px;
+    background:#581c87;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .remove-btn:hover{ background:#7e22ce; }
+
+  .empty{
+    padding:30px;
+    background:var(--glass);
+    text-align:center;
+    border-radius:12px;
+    color:var(--muted);
+    font-size:1.2rem;
+    margin-top:26px;
+  }
+
+  /* ----------- MODAL ----------- */
+  .modal-overlay{
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    backdrop-filter:blur(3px);
+  }
+
+  .modal{
+    background:#12081d;
+    padding:28px;
+    width:90%;
+    max-width:360px;
+    border-radius:14px;
+    text-align:center;
+    box-shadow:0 10px 40px rgba(0,0,0,0.6);
+    border:1px solid rgba(168,85,247,0.2);
+  }
+
+  .modal h2{
+    margin:0 0 10px;
+    font-size:1.4rem;
+    color:var(--accent);
+  }
+  .modal p{ color:var(--muted); }
+
+  .modal-actions{
+    margin-top:22px;
+    display:flex;
+    gap:14px;
+  }
+  .btn{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .cancel-btn{ background:#333; color:white; }
+  .remove-confirm-btn{ background:var(--accent-2); color:white; }
+  .remove-confirm-btn:hover{ background:var(--accent); }
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">PopScreen</div>
+  <button onclick="window.location.href='home.html'">Voltar</button>
+</header>
+
+<main class="page">
+  <h1>Minha Lista</h1>
+
+  <div id="listaContainer" class="list-container"></div>
+  <div id="emptyMsg" class="empty" style="display:none;">
+    Sua lista está vazia!
+  </div>
+</main>
+
+<div id="confirmModal" class="modal-overlay">
+  <div class="modal">
+    <h2>Remover filme</h2>
+    <p>Tem certeza de que deseja remover este filme da sua lista?</p>
+
+    <div class="modal-actions">
+      <button class="btn cancel-btn" id="cancelRemove">Cancelar</button>
+      <button class="btn remove-confirm-btn" id="confirmRemove">Remover</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let indexParaRemover = null;
+
+function carregarLista() {
+  const lista = JSON.parse(localStorage.getItem("listaFilmes")) || [];
+  const container = document.getElementById("listaContainer");
+  const empty = document.getElementById("emptyMsg");
+
+  container.innerHTML = "";
+
+  if (lista.length === 0) {
+    empty.style.display = "block";
+    return;
+  } else {
+    empty.style.display = "none";
+  }
+
+  lista.forEach((filme, index) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    // ALTERAÇÃO AQUI: Adicionando year e genres (se existirem)
+    const genresText = Array.isArray(filme.genres) ? filme.genres.join(', ') : '';
+    const yearText = filme.year ? `(${filme.year})` : '';
+
+    card.innerHTML = `
+      <img src="${filme.img}" alt="${filme.titulo}">
+      <h3>${filme.titulo}</h3>
+      <small>${yearText} ${genresText}</small>
+      <button class="remove-btn" data-index="${index}">Remover</button>
+    `;
+
+    container.appendChild(card);
+  });
+
+  // Abrir modal ao clicar
+  document.querySelectorAll(".remove-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      indexParaRemover = this.dataset.index;
+      document.getElementById("confirmModal").style.display = "flex";
+    });
+  });
+}
+
+// Eventos do modal
+document.getElementById("cancelRemove").addEventListener("click", () => {
+  document.getElementById("confirmModal").style.display = "none";
+  indexParaRemover = null;
+});
+
+document.getElementById("confirmRemove").addEventListener("click", () => {
+  if (indexParaRemover !== null) {
+    let lista = JSON.parse(localStorage.getItem("listaFilmes")) || [];
+    lista.splice(indexParaRemover, 1);
+    localStorage.setItem("listaFilmes", JSON.stringify(lista));
+  }
+  document.getElementById("confirmModal").style.display = "none";
+  carregarLista(); // Recarrega a lista após a remoção
+});
+
+carregarLista();
+</script>
+
+</body>
+</html>
