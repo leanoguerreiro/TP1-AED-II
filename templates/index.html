@@ -1,0 +1,286 @@
+<!doctype html> 
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PopScreen — Preferências</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    body {
+      background:
+        linear-gradient(rgba(5, 0, 10, 0.65), rgba(0, 0, 0, 0.9)),
+        url("https://wallpaperaccess.com/full/1512237.jpg") no-repeat center/cover;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 720px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(14px) saturate(130%);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    h1 {
+      color: #a855f7;
+      margin-bottom: 5px;
+      font-size: 2rem;
+    }
+
+    p {
+      color: #bfa6dd;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #f8f4ff;
+    }
+
+    /* CHIPS/GÊNEROS */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .chip.active {
+      background: #a855f7;
+      border-color: #f8f4ff;
+      font-weight: 600;
+      transform: scale(1.03);
+    }
+
+    /* RÁDIOS/MOOD */
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="radio"] {
+      /* Estilização básica do rádio */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #a855f7;
+      border-radius: 50%;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    input[type="radio"]:checked {
+      background-color: #a855f7;
+      border-color: #f8f4ff;
+    }
+
+    /* BOTÕES */
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background: #a855f7;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #9333ea;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #bfa6dd;
+      border: 1px solid #bfa6dd;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(181, 166, 221, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <h1>Olá! Qual seu perfil?</h1>
+  <p>Ajude-nos a encontrar as melhores recomendações para você.</p>
+
+  <form id="prefsForm">
+    
+    <div class="form-group">
+      <label>Gêneros de filme preferidos (selecione quantos quiser):</label>
+      <div class="chips" id="genreChips">
+        <div class="chip" data-value="Action">Ação</div>
+        <div class="chip" data-value="Comedy">Comédia</div>
+        <div class="chip" data-value="Drama">Drama</div>
+        <div class="chip" data-value="Horror">Terror</div>
+        <div class="chip" data-value="Science Fiction">Ficção Científica</div>
+        <div class="chip" data-value="Fantasy">Fantasia</div>
+        <div class="chip" data-value="Romance">Romance</div>
+        <div class="chip" data-value="Adventure">Aventura</div>
+        <div class="chip" data-value="Crime">Crime</div>
+        <div class="chip" data-value="Mystery">Mistério</div>
+        <div class="chip" data-value="Documentary">Documentário</div>
+        <div class="chip" data-value="Animation">Animação</div>
+        <div class="chip" data-value="Family">Família</div>
+        <div class="chip" data-value="Thriller">Suspense</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Qual o seu humor predominante ao assistir?</label>
+      <div class="radio-group">
+        <div class="radio-item">
+          <input type="radio" id="moodRelaxed" name="mood" value="Relaxado" checked>
+          <label for="moodRelaxed">Relaxado</label>
+        </div>
+        <div class="radio-item">
+          <input type="radio" id="moodExcited" name="mood" value="Animado">
+          <label for="moodExcited">Animado</label>
+        </div>
+        <div class="radio-item">
+          <input type="radio" id="moodReflective" name="mood" value="Reflexivo">
+          <label for="moodReflective">Reflexivo</label>
+        </div>
+        <div class="radio-item">
+          <input type="radio" id="moodTense" name="mood" value="Tenso">
+          <label for="moodTense">Tenso</label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="button-group">
+      <button type="button" class="btn btn-secondary" id="skipBtn">Pular por agora</button>
+      <button type="submit" class="btn btn-primary">Ver Recomendações</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  const chips = document.querySelectorAll('#genreChips .chip');
+
+  // OBJETO DE PREFERÊNCIAS
+  let prefs = {
+    genres: [],
+    mood: 'Relaxado'
+  };
+
+  // Carregar preferências salvas se existirem
+  const savedGenres = JSON.parse(localStorage.getItem('selectedGenres') || '[]');
+  const savedMood = localStorage.getItem('selectedMood');
+
+  if (savedGenres.length > 0) {
+    prefs.genres = savedGenres;
+    chips.forEach(chip => {
+      if (prefs.genres.includes(chip.dataset.value))
+        chip.classList.add('active');
+    });
+  }
+
+  if (savedMood) {
+    prefs.mood = savedMood;
+    const r = document.querySelector(`input[name="mood"][value="${prefs.mood}"]`);
+    if (r) r.checked = true;
+  }
+
+  // Lógica dos chips de gênero
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const v = chip.dataset.value;
+      chip.classList.toggle('active');
+
+      if (chip.classList.contains('active')) {
+        if (!prefs.genres.includes(v)) prefs.genres.push(v);
+      } else {
+        prefs.genres = prefs.genres.filter(g => g !== v);
+      }
+
+      // Salvar imediatamente no formato que o home usa
+      localStorage.setItem('selectedGenres', JSON.stringify(prefs.genres));
+    });
+  });
+
+  // Humor
+  document.querySelectorAll('input[name="mood"]').forEach(r => {
+    r.addEventListener('change', e => {
+      prefs.mood = e.target.value;
+
+      // Salvar imediatamente
+      localStorage.setItem('selectedMood', prefs.mood);
+    });
+  });
+
+  // Submissão
+  document.getElementById('prefsForm').addEventListener('submit', e => {
+    e.preventDefault();
+
+    // Garante que tudo esteja salvo
+    localStorage.setItem('selectedGenres', JSON.stringify(prefs.genres));
+    localStorage.setItem('selectedMood', prefs.mood);
+
+    window.location.href = 'home.html';
+  });
+
+  // Botão Pular
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    localStorage.removeItem('selectedGenres');
+    localStorage.removeItem('selectedMood');
+    window.location.href = 'home.html';
+  });
+</script>
+
+</body>
+</html>
