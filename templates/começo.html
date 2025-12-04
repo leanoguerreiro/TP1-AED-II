@@ -1,0 +1,111 @@
+<!doctype html> 
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PopScreen — Começo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    body {
+      background:
+        linear-gradient(rgba(5, 0, 10, 0.65), rgba(0, 0, 0, 0.9)),
+        url("https://wallpaperaccess.com/full/1512237.jpg") no-repeat center/cover;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(14px) saturate(130%);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+      border-radius: 18px;
+      border: 1px solid rgba(160,80,255,0.18);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      overflow: hidden;
+      padding: 40px 20px;
+    }
+
+    .brand {
+      color: #fff; 
+      font-size: 2rem; 
+      font-weight: 700; 
+      text-shadow: 0 0 8px rgba(160,70,255,0.5); 
+      margin-bottom: 20px;
+    }
+
+    h1 { font-size: 28px; margin-bottom: 10px; color: #e9d7ff; }
+    p.lead { color: #d9c9ee; margin-bottom: 25px; }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-weight:700;
+      cursor:pointer;
+      border:none;
+      transition: 0.18s;
+      font-size: 1rem;
+      width: 60%;
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg,#a04aff,#4b007a);
+      color:#fff; 
+      box-shadow: 0 6px 14px rgba(140,40,255,0.28);
+    }
+    .btn.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(140,40,255,0.4); }
+
+    .link {
+      color:#e9d7ff;
+      text-decoration:none;
+      font-weight:600;
+      cursor:pointer;
+      font-size: 0.95rem;
+    }
+    .link:hover { text-decoration:underline; }
+
+  </style>
+</head>
+<body>
+
+  <main class="panel">
+    <div class="brand">PopScreen</div>
+
+    <div class="actions">
+      <br><button class="btn primary" id="enterBtn">Entrar</button>
+      <br><a class="link" id="exitLink">Sair</a>
+    </div>
+  </main>
+
+<script>
+  document.getElementById('enterBtn').addEventListener('click', () => {
+    window.location.href = 'index.html';
+  });
+
+  document.getElementById('exitLink').addEventListener('click', () => {
+    if (confirm('Deseja realmente sair da página?')) {
+      // Redireciona para uma página em branco
+      window.location.href = 'about:blank';
+    }
+  });
+
+</script>
+
+</body>
+</html>
