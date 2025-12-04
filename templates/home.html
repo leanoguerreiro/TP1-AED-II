@@ -1,0 +1,704 @@
+<!doctype html> 
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PopScreen — Recomendações</title>
+    <!-- Incluindo a fonte Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#060608;
+            --panel: rgba(18,10,24,0.6);
+            --accent: #a855f7;
+            --accent-2: #6b21a8;
+            --muted: #bfa6dd;
+            --card-bg: rgba(255,255,255,0.03);
+            --glass: rgba(255,255,255,0.04);
+            --white: #f8f4ff;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background: linear-gradient(180deg, #070607 0%, #0f0616 50%, #000000 100%);
+            color:var(--white);
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+        }
+
+        /* HEADER */
+        header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:18px 28px;
+            background: rgba(6,6,6,0.6);
+            border-bottom: 1px solid rgba(168,85,247,0.08);
+            position: sticky; top:0; z-index:999;
+            backdrop-filter: blur(6px);
+        }
+        .brand{ font-weight:700; color:var(--accent); font-size:1.25rem }
+        .header-right{ display:flex; gap:14px; align-items:center }
+
+        /* SEARCH */
+        .search-wrap{ position:relative; display:flex; align-items:center }
+        .search-input{
+            padding:10px 12px 10px 40px;
+            border-radius:10px;
+            border: 1px solid rgba(168,85,247,0.18);
+            background: #0c0b0f;
+            color:var(--white);
+            width:320px;
+            outline:none;
+        }
+        .search-input::placeholder{ color: rgba(255,255,255,0.45) }
+        .search-icon{
+            width:16px;height:16px;border:3px solid var(--accent);border-radius:50%;
+            position:absolute; left:12px; top:50%; transform:translateY(-50%);
+        }
+        .search-icon::after{
+            content:""; width:10px; height:3px; background:var(--accent);
+            position:absolute; right:-7px; bottom:-3px; transform:rotate(45deg); border-radius:2px;
+        }
+        .btn{
+            padding:10px 14px;border-radius:10px;border:none;background:var(--accent-2);color:white;cursor:pointer;
+            font-weight:600;
+            transition: background 0.2s;
+        }
+        .btn:hover{ background:var(--accent) }
+
+        /* PAGE LAYOUT */
+        .page {
+            max-width:1200px;
+            margin:28px auto;
+            padding:0 20px 80px;
+        }
+
+        h1{ font-size:1.9rem; color:var(--white); margin:18px 0 }
+        p.lead{ color:var(--muted); margin:0 0 18px 0 }
+
+        /* TOP PICKS (carrossel) */
+        .section{ margin-top:26px }
+        .section-title{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px }
+        .section-title h2{ margin:0; color:var(--accent); font-size:1.2rem }
+        .row{
+            overflow:hidden;
+            position:relative;
+        }
+        .carousel{
+            display:flex;
+            gap:14px;
+            overflow-x:auto;
+            padding-bottom:6px;
+            scroll-behavior:smooth;
+        }
+        .carousel::-webkit-scrollbar{ height:10px }
+        .carousel::-webkit-scrollbar-thumb{ background: rgba(168,85,247,0.18); border-radius:10px }
+
+        .card{
+            min-width:220px;
+            width:220px;
+            height: 320px;
+            background:var(--card-bg);
+            border-radius:12px;
+            position:relative;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            border:1px solid rgba(168,85,247,0.06);
+            overflow:hidden;
+            flex:0 0 auto;
+            cursor:pointer;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: scale(1.02); }
+        .card img{ width:100%; height:100%; object-fit:cover; display:block }
+        .card .meta{
+            position:absolute; left:0; right:0; bottom:0;
+            padding:12px; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.8));
+            color:var(--white);
+            font-weight:600;
+        }
+        .card .meta small{ display:block; color:var(--muted); font-weight:500; margin-top:6px; font-size:0.85rem }
+
+        .empty{
+            padding:26px; background:var(--glass); border-radius:12px; color:var(--muted);
+        }
+
+        .pills{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px }
+        .pill{
+            padding:8px 12px; border-radius:999px; background: rgba(168,85,247,0.08);
+            color:var(--white); border:1px solid rgba(168,85,247,0.06); font-weight:600; font-size:0.9rem;
+        }
+        
+        /* Genre Filter Styling */
+        #topPicksInfo {
+            display: flex;
+            align-items: center;
+            color:var(--muted); 
+            font-size:0.95rem;
+        }
+        #genre-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--accent);
+            background: rgba(12, 11, 15, 0.8);
+            color: var(--white);
+            outline: none;
+            cursor: pointer;
+            appearance: none; /* Remove default dropdown arrow */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23bfa6dd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px; /* Space for the custom arrow */
+        }
+        #genre-select:focus {
+             border-color: var(--accent-2);
+        }
+
+        @media (max-width:900px){
+            .search-input{ width:200px }
+            .card{ min-width:160px; width:160px; height:240px }
+        }
+
+        .poster-placeholder{
+            display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
+            font-weight:700; text-align:center; padding:10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">PopScreen</div>
+    <div class="header-right">
+        <div class="search-wrap" role="search" aria-label="Pesquisar filmes">
+            <span class="search-icon" aria-hidden="true"></span>
+            <input id="search" class="search-input" type="search" placeholder="Procurar filme, ator, gênero...">
+        </div>
+        <button class="btn" id="btnSearch">Minha lista</button>
+        <!-- Removido o alert/confirm() do botão Sair para não quebrar a execução -->
+        <button class="btn" id="btnExit">Voltar</button>
+    </div>
+</header>
+
+<main class="page" role="main">
+    <h1>Recomendações para você</h1>
+
+    <!-- Populares: Agora alimentado pelo CSV e com filtro de Gênero -->
+    <section id="topPicks" class="section">
+        <div class="section-title">
+            <h2>Populares (Dados CSV)</h2>
+            <div id="topPicksInfo">
+                <!-- O seletor de gênero será injetado aqui pelo JS -->
+                <div style="color:var(--muted); font-size:0.95rem">Carregando dados...</div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="topCarousel" class="carousel" aria-live="polite">
+                 <!-- Carregando... -->
+                 <div style="padding: 10px; color: var(--muted);">Carregando filmes...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Em Cartaz: Permanece com TMDB -->
+    <section id="nowPlaying" class="section">
+        <div class="section-title">
+            <h2>Em Cartaz (TMDB)</h2>
+            <div style="color:var(--muted); font-size:0.95rem">Via API</div>
+        </div>
+        <div class="row">
+            <div id="nowCarousel" class="carousel"></div>
+        </div>
+    </section>
+
+    <!-- Lançamentos: Permanece com TMDB -->
+    <section id="upcoming" class="section">
+        <div class="section-title">
+            <h2>Lançamentos (TMDB)</h2>
+            <div style="color:var(--muted); font-size:0.95rem">Via API</div>
+        </div>
+        <div class="row">
+            <div id="upcomingCarousel" class="carousel"></div>
+        </div>
+    </section>
+
+    <!-- Por Gênero: Permanece com TMDB -->
+    <section id="byGenre" class="section"></section>
+
+</main>
+
+<script>
+/* ---------------------------
+    VARIÁVEIS GLOBAIS
+----------------------------*/
+// Variável para armazenar os dados do CSV (carregado apenas uma vez)
+let csvData = { movies: [], genres: [] };
+
+// Chave TMDB (necessária para as outras seções)
+const TMDB_BEARER = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyOGY1MDBmNjYyMmE0ZWIwYmVhZjk3OTkwZTcwOWEzZSIsIm5iZiI6MTc2Mzc0NzAyMy45NzEsInN1YiI6IjY5MjBhNGNmNGNiYjY1YTk1NTA1OGU0ZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.2m0_5x9WXUM8HzK6stU4dYR8sI_HRz0trb2Z5e97vmA";
+
+/* ---------------------------
+    FIREBASE (Apenas para evitar erros de referência, embora não seja usado neste escopo)
+----------------------------*/
+// Removido para simplificar o código, pois o Firestore não é usado neste app e estava gerando warnings.
+
+/* ---------------------------
+    FUNÇÕES DE UTILIDADE
+----------------------------*/
+
+/**
+ * Cria uma URL de placeholder simples para filmes do CSV.
+ * @param {string} title Título do filme para o texto do placeholder.
+ * @returns {string} URL da imagem placeholder.
+ */
+function createPlaceholderImage(title) {
+    const text = (title || "PopScreen").substring(0, 15).replace(/\s/g, '+');
+    return `https://placehold.co/220x330/1e0730/a855f7?text=${text}`;
+}
+
+/**
+ * Converte um objeto de filme (TMDB ou CSV) em um elemento Card HTML.
+ */
+function makeCard(film) {
+    const d = document.createElement('div');
+    d.className = 'card';
+
+    const img = document.createElement('img');
+    // Se não tiver 'img' (TMDB) ou se for nulo (CSV com placeholder), usa a URL.
+    const imgSrc = film.img || createPlaceholderImage(film.titulo); 
+    img.src = imgSrc;
+    img.alt = film.titulo;
+    // Adiciona um fallback simples para erro de imagem
+    img.onerror = () => { img.src = createPlaceholderImage(film.titulo); };
+    d.appendChild(img);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    // Nota: O filme do CSV tem 'genres' como array com 1 item
+    const genreText = film.genres ? film.genres.join(', ') : 'Gênero Desconhecido';
+    const yearText = film.year || '----';
+
+    meta.innerHTML = `
+        <strong>${film.titulo}</strong>
+        <small>${yearText} • ${genreText}</small>
+    `;
+    d.appendChild(meta);
+
+    d.onclick = () => showFilmDetail(film);
+    return d;
+}
+
+/**
+ * Exibe um modal com detalhes do filme.
+ */
+function showFilmDetail(f) {
+    const isCsv = !f.overview; // Simplesmente verifica se é um filme CSV (sem overview)
+    const overlay = document.createElement('div');
+    Object.assign(overlay.style, {
+        position:'fixed', left:0, top:0, right:0, bottom:0,
+        background:'rgba(0,0,0,0.85)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        zIndex:9999,
+        backdropFilter: 'blur(5px)'
+    });
+
+    const card = document.createElement('div');
+    Object.assign(card.style, {
+        width:'min(880px,90%)', background:'#0b0b0b',
+        borderRadius:'12px', overflow:'hidden',
+        boxShadow:'0 20px 60px rgba(0,0,0,0.9)',
+        border: '1px solid var(--accent-2)',
+    });
+
+    const genreText = f.genres ? f.genres.join(' • ') : '—';
+    const langText = f.language ? f.language.toUpperCase() : 'PT-BR (CSV)';
+    const overview = f.overview || (isCsv ? 'Sem sinopse disponível. Este filme é proveniente da sua base de dados CSV local.' : 'Sem sinopse disponível.');
+    const noteText = isCsv ? f.nota.toFixed(1) : f.vote_average ? f.vote_average.toFixed(1) : '—';
+
+    const imgSrc = f.img || createPlaceholderImage(f.titulo); 
+
+    card.innerHTML = `
+        <div style="display:flex; gap:18px; padding:24px; color:var(--white)">
+            <img src="${imgSrc}" style="min-width:220px; width:220px; height:330px; object-fit:cover; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);" onerror="this.src='${createPlaceholderImage(f.titulo)}'">
+            
+            <div style="flex:1;">
+                <h2>${f.titulo} <small style="color:var(--muted); font-size:1.1rem">(${f.year || '----'})</small></h2>
+
+                <p style="color:var(--muted); margin-top:6px; font-size:0.9rem">
+                    ${genreText} • ${langText}
+                </p>
+
+                <p style="margin-top:14px; color:#ddd; text-align: justify; line-height:1.6;">
+                    ${overview}
+                </p>
+
+                <p style="margin-top:16px; color:#ddd; font-weight:600;">
+                    <strong>Duração:</strong> ${f.runtime ? f.runtime + ' min' : '—'} 
+                    <span style="margin: 0 10px;">|</span>
+                    <strong>Nota:</strong> ${noteText}
+                </p>
+
+                <div style="margin-top:30px; display:flex; justify-content:flex-start;">
+                    <button id="btnAddLista"
+                        style="
+                            padding:12px 18px;
+                            background: var(--accent);
+                            border:1px solid rgba(255,255,255,0.1);
+                            color:white;
+                            border-radius:999px;
+                            cursor:pointer;
+                            font-weight:600;
+                            transition: background 0.2s;
+                        "
+                        onmouseover="this.style.background= 'var(--accent-2)'"
+                        onmouseout="this.style.background= 'var(--accent)'"
+                    >
+                        Adicionar à Minha Lista
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    `;
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    card.querySelector("#btnAddLista").onclick = () => {
+        adicionarNaLista({
+            id: f.id, 
+            titulo: f.titulo, 
+            year: f.year, 
+            genres: f.genres, 
+            language: f.language || 'pt-br', 
+            img: f.img || createPlaceholderImage(f.titulo), 
+            overview: f.overview || 'Filme da base local'
+        });
+    };
+}
+
+
+/* ---------------------------
+    TMDB FETCH (mantido para as outras seções)
+----------------------------*/
+async function tmdbFetch(path, params = {}) {
+    const base = "https://api.themoviedb.org/3";
+    const url = new URL(base + path);
+    for (const k in params) url.searchParams.append(k, params[k]);
+    try {
+        const res = await fetch(url.toString(), {
+            headers: {
+                "Authorization": "Bearer " + TMDB_BEARER,
+                "Content-Type": "application/json;charset=utf-8",
+                "Accept": "application/json"
+            }
+        });
+        if (!res.ok) {
+             console.warn("TMDB API returned error for:", path, res.status);
+             return null;
+        }
+        return res.json();
+    } catch(e) {
+        console.error("TMDB Fetch failed:", e);
+        return null;
+    }
+}
+
+/**
+ * Enriquecer dados de filmes da TMDB (mantido)
+ */
+async function enrichMovieFromResult(result, genreMap) {
+    // Reduzida a chamada para detalhes para economizar requisições e focar no CSV
+    const details = {}; // Simulação de detalhes para manter a estrutura
+    
+    // Originalmente fazia mais uma chamada: 
+    // const details = await tmdbFetch(`/movie/${result.id}`, { language: 'pt-BR' }) || {};
+
+    const img = result.poster_path
+        ? `https://image.tmdb.org/t/p/w500${result.poster_path}`
+        : null;
+
+    // Converte IDs de Gênero do resultado da TMDB em nomes
+    const genreNames = (result.genre_ids || []).map(id => genreMap[id]).filter(name => name);
+
+    return {
+        id: result.id,
+        titulo: result.title,
+        year: (result.release_date || '').slice(0,4),
+        genres: genreNames,
+        language: result.original_language,
+        img,
+        overview: result.overview,
+        runtime: details.runtime,
+        vote_average: result.vote_average
+    };
+}
+
+
+/* ---------------------------
+    CSV DATA HANDLING
+----------------------------*/
+
+/**
+ * Carrega e processa o arquivo filmes.csv
+ */
+async function loadCSVData() {
+    try {
+        const response = await fetch('filmes.csv');
+        const text = await response.text();
+        const rows = text.trim().split('\n');
+        if (rows.length < 2) return { movies: [], genres: [] };
+
+        const movies = [];
+        const genres = new Set();
+        
+        // Expressão regular para dividir, considerando títulos que podem ter vírgulas se estiverem entre aspas.
+        // O snippet mostra um CSV simples sem aspas na maioria dos títulos. Usaremos split simples para a estrutura fornecida.
+        
+        for (let i = 1; i < rows.length; i++) {
+            // Dividindo a linha de forma simples, assumindo a estrutura: id,titulo,ano,genero,nota
+            const simpleValues = rows[i].split(',').map(v => v.trim());
+            
+            if (simpleValues.length >= 5) {
+                const genreString = simpleValues[3] || '';
+                const title = simpleValues[1];
+
+                if(title.toLowerCase() === 'titulo' || title.toLowerCase() === 'title') continue; // Skip header in case of bad parsing
+
+                const movie = {
+                    // Mapeando a estrutura do CSV para o objeto de filme
+                    id: simpleValues[0],
+                    titulo: title,
+                    year: simpleValues[2],
+                    // Trata o gênero como um array de strings para compatibilidade com makeCard
+                    genres: genreString ? genreString.split('|').map(g => g.trim()).filter(g => g.length > 0) : [],
+                    generoRaw: genreString, // Gênero original para o filtro
+                    nota: parseFloat(simpleValues[4]),
+                    // Imagem de placeholder baseada no título
+                    img: createPlaceholderImage(title) 
+                };
+                movies.push(movie);
+                
+                // Extrai todos os gêneros únicos
+                if (genreString) {
+                    genreString.split('|').forEach(g => {
+                        const trimmed = g.trim();
+                        if(trimmed.length > 0) genres.add(trimmed);
+                    });
+                }
+            }
+        }
+        return { movies, genres: Array.from(genres).sort() };
+
+    } catch (error) {
+        console.error("Erro ao carregar ou processar o CSV:", error);
+        return { movies: [], genres: [] };
+    }
+}
+
+/**
+ * Filtra e renderiza os filmes do CSV no carrossel "Populares".
+ * @param {string} selectedGenre O gênero selecionado no dropdown.
+ */
+function renderCSVRecommendations(selectedGenre) {
+    const container = document.getElementById('topCarousel');
+    container.innerHTML = "";
+
+    let filteredMovies = [];
+    if (selectedGenre === 'Todos') {
+        filteredMovies = csvData.movies;
+    } else {
+        // CORREÇÃO: comparando diretamente o gênero único do CSV
+        filteredMovies = csvData.movies.filter(movie => movie.generoRaw === selectedGenre);
+    }
+    
+    const limit = 20;
+    const moviesToShow = filteredMovies.slice(0, limit);
+
+    if (moviesToShow.length === 0) {
+        container.innerHTML = `<div class="empty" style="width: 100%;">Nenhum filme encontrado para o gênero: ${selectedGenre}.</div>`;
+    } else {
+        moviesToShow.forEach(f => container.appendChild(makeCard(f)));
+    }
+}
+
+/* ---------------------------
+    LISTS AND INIT
+----------------------------*/
+async function buildRecommendations() {
+    // 1. Carregar Dados CSV (apenas uma vez)
+    csvData = await loadCSVData();
+    const containerTop = document.getElementById('topCarousel');
+
+    // 2. Criar e Popular o Seletor de Gênero para o Carrossel CSV (Populares)
+    const topPicksInfo = document.getElementById('topPicksInfo');
+    topPicksInfo.innerHTML = `
+        <label for="genre-select" style="margin-right:8px; white-space:nowrap;">Filtrar por Gênero:</label>
+        <select id="genre-select"></select>
+    `;
+
+    const genreSelect = document.getElementById('genre-select');
+    
+    // Opção 'Todos'
+    const defaultOption = document.createElement('option');
+    defaultOption.value = 'Todos';
+    defaultOption.textContent = 'Todos os Gêneros';
+    genreSelect.appendChild(defaultOption);
+
+    // Opções de Gênero do CSV
+    csvData.genres.forEach(genre => {
+        const option = document.createElement('option');
+        option.value = genre;
+        option.textContent = genre;
+        genreSelect.appendChild(option);
+    });
+
+    genreSelect.addEventListener('change', () => {
+        renderCSVRecommendations(genreSelect.value);
+    });
+
+    // 3. Renderização Inicial do Carrossel CSV
+    renderCSVRecommendations(genreSelect.value);
+
+
+    // 4. Configuração e Renderização das Seções TMDB
+    const genresResp = await tmdbFetch('/genre/movie/list', { language: 'pt-BR' });
+    const genreMap = {};
+    (genresResp?.genres || []).forEach(g => genreMap[g.id]=g.name);
+
+    const containerNow = document.getElementById('nowCarousel');
+    const containerUpcoming = document.getElementById('upcomingCarousel');
+    const containerByGenre = document.getElementById('byGenre');
+
+    containerNow.innerHTML = "";
+    containerUpcoming.innerHTML = "";
+    containerByGenre.innerHTML = "";
+
+    async function renderList(endpoint, params, target, limit=12) {
+        const resp = await tmdbFetch(endpoint, Object.assign({ language:'pt-BR', page:1 }, params));
+        if (!resp || !resp.results) {
+             target.innerHTML = `<div class="empty">Falha ao carregar dados TMDB.</div>`;
+             return;
+        }
+        const movies = resp.results.slice(0, limit);
+        const enriched = await Promise.all(movies.map(r => enrichMovieFromResult(r, genreMap)));
+        enriched.forEach(f => target.appendChild(makeCard(f)));
+    }
+    
+    // Carrosséis TMDB estáticos (como solicitado)
+    await renderList('/movie/now_playing', {}, containerNow);
+    await renderList('/movie/upcoming', {}, containerUpcoming);
+
+    // Seção Por Gênero (TMDB)
+    const topGenres = (genresResp?.genres || []).slice(0, 4);
+    for (const g of topGenres) {
+        const section = document.createElement('section');
+        section.className = 'section';
+
+        section.innerHTML = `
+            <div class="section-title">
+                <h2>${g.name} (TMDB)</h2>
+                <div style="color:var(--muted); font-size:0.95rem">Filtrado por Gênero</div>
+            </div>
+        `;
+
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        const car = document.createElement('div');
+        car.className = 'carousel';
+        row.appendChild(car);
+        section.appendChild(row);
+        containerByGenre.appendChild(section);
+
+        await renderList('/discover/movie', { with_genres:g.id, sort_by:'popularity.desc' }, car);
+    }
+}
+
+/* ---------------------------
+    BUSCA (Mantida com TMDB)
+----------------------------*/
+const searchInput = document.getElementById('search');
+let searchTimeout = null;
+
+searchInput.oninput = () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        const q = searchInput.value.trim();
+
+        // Se o campo de busca estiver vazio, recarrega a página principal (ou as recomendações)
+        if (!q) {
+            buildRecommendations();
+            return;
+        }
+
+        const resp = await tmdbFetch('/search/movie', {
+            query:q, language:'pt-BR', page:1, include_adult:false
+        });
+
+        const genreResp = await tmdbFetch('/genre/movie/list', { language:'pt-BR' });
+        const genreMap = {};
+        (genreResp?.genres || []).forEach(g => genreMap[g.id]=g.name);
+
+        const grid = document.getElementById('topCarousel');
+        grid.innerHTML = ""; // Reusa o topCarousel para exibir o resultado da busca
+
+        if (!resp || !resp.results || resp.results.length === 0) {
+            grid.innerHTML = `<div class="empty" style="width: 100%;">Nenhum resultado encontrado na TMDB para "${q}".</div>`;
+            return;
+        }
+
+        const movies = resp.results.slice(0,12);
+        const enriched = await Promise.all(movies.map(r => enrichMovieFromResult(r, genreMap)));
+        enriched.forEach(f => grid.appendChild(makeCard(f)));
+
+        // Limpa as outras seções durante a busca
+        document.getElementById('nowCarousel').innerHTML = "";
+        document.getElementById('upcomingCarousel').innerHTML = "";
+        document.getElementById('byGenre').innerHTML = "";
+        document.getElementById('topPicksInfo').innerHTML = `<div style="color:var(--muted); font-size:0.95rem">Resultados da busca</div>`;
+    }, 400);
+};
+
+/* ---------------------------
+    MINHA LISTA (Mantida)
+----------------------------*/
+function adicionarNaLista(filme) {
+    let lista = JSON.parse(localStorage.getItem("listaFilmes")) || [];
+    
+    // Substituindo alert() por uma mensagem na console para evitar o bloqueio no iframe
+    let message = '';
+    if (!lista.some(item => item.titulo === filme.titulo)) {
+        lista.push(filme);
+        localStorage.setItem("listaFilmes", JSON.stringify(lista));
+        message = `"${filme.titulo}" adicionado à sua lista!`;
+    } else {
+        message = `"${filme.titulo}" já está na sua lista.`;
+    }
+    console.log("Minha Lista: " + message);
+    
+    // Você pode substituir por um modal ou toast customizado aqui, se quiser um feedback visual
+    // Exemplo: showToast(message);
+}
+
+/* ---------------------------
+    INIT & BOTÕES
+----------------------------*/
+// Inicia o carregamento e renderização das recomendações
+buildRecommendations();
+
+document.getElementById("btnSearch").onclick = () => {
+    // Para manter a funcionalidade original de redirecionamento, se lista.html existir
+    window.location.href = "lista.html";
+};
+
+document.getElementById("btnExit").onclick = () => {
+    // Removido o confirm() para evitar o erro de bloqueio
+    window.location.href = "index.html";
+};
+</script>
+
+</body>
+</html>
