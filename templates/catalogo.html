@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PopScreen — Catálogo</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg:#060608;
@@ -31,492 +32,307 @@
         padding:18px 28px;
         background:rgba(6,6,8,0.7);
         backdrop-filter: blur(10px);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: sticky;
-        top: 0;
-        z-index: 50;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        position:sticky;
+        top:0;
+        z-index:50;
+        box-shadow:0 4px 6px rgba(0,0,0,0.2);
     }
     .logo{
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: var(--accent);
-        text-decoration: none;
-        cursor: pointer;
+        font-size:1.8rem;
+        font-weight:600;
+        color:var(--accent);
+        text-decoration:none;
     }
-    .nav-links a {
-        color: var(--white);
-        text-decoration: none;
-        margin-left: 20px;
-        font-weight: 400;
-        transition: color 0.2s;
+    .nav-links a{
+        color:var(--white);
+        text-decoration:none;
+        margin-left:20px;
     }
-    .nav-links a:hover {
-        color: var(--accent);
-    }
-    
-    /* MAIN CATALOG GRID */
-    .section {
-        padding: 30px 20px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        border-bottom: 2px solid rgba(168, 85, 247, 0.3);
-        padding-bottom: 10px;
-    }
-    .section-title {
-        font-size: 2rem;
-        font-weight: 600;
-        color: var(--white);
-    }
-    .back-btn {
-        background: var(--accent-2);
-        color: var(--white);
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background-color 0.2s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .back-btn:hover {
-        background: var(--accent);
+    .nav-links a:hover{
+        color:var(--accent);
     }
 
-    .movie-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 20px;
+    /* GRID */
+    .section{
+        padding:30px 20px;
+        max-width:1400px;
+        margin:auto;
     }
-    
-    @media (max-width: 768px) {
-        .movie-grid {
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-        }
-        .section-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        .section-title {
-            font-size: 1.5rem;
-        }
+    .section-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:25px;
+        border-bottom:2px solid rgba(168,85,247,0.3);
+        padding-bottom:10px;
     }
-
-    .empty {
-        grid-column: 1 / -1;
-        padding: 40px;
-        color: var(--muted);
-        text-align: center;
-        font-size: 1.1rem;
+    .movie-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+        gap:20px;
+    }
+    .empty{
+        grid-column:1 / -1;
+        text-align:center;
+        padding:40px;
+        color:var(--muted);
     }
 
-    /* MOVIE CARD */
-    .movie-card {
-        background: var(--card-bg);
-        border-radius: 12px;
-        overflow: hidden;
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
-        min-height: 300px;
+    /* CARD */
+    .movie-card{
+        background:var(--card-bg);
+        border-radius:12px;
+        overflow:hidden;
+        cursor:pointer;
+        transition:0.2s;
     }
-    .movie-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);
+    .movie-card:hover{
+        transform:translateY(-5px);
+        box-shadow:0 10px 20px rgba(168,85,247,0.2);
     }
-    .movie-card img {
-        width: 100%;
-        height: 270px; /* Altura fixa do poster */
-        object-fit: cover;
-        display: block;
+    .movie-card img{
+        width:100%;
+        height:270px;
+        object-fit:cover;
     }
-    @media (max-width: 768px) {
-        .movie-card img {
-            height: 180px;
-        }
+    .movie-info{
+        padding:10px;
     }
-
-    .movie-info {
-        padding: 10px;
+    .movie-info h4{
+        margin:0 0 5px;
+        font-size:0.9rem;
+        overflow:hidden;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
     }
-    .movie-info h4 {
-        font-size: 0.9rem;
-        margin: 0 0 5px 0;
-        line-height: 1.2;
-        
-        /* Line-clamp para título: Propriedades de compatibilidade */
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2; /* Padrão WebKit para Chrome, Safari */
-        line-clamp: 2; /* Propriedade padrão (para compatibilidade futura) */
-        text-overflow: ellipsis;
-    }
-    .movie-info p {
-        font-size: 0.75rem;
-        color: var(--muted);
-        margin: 0;
+    .movie-info p{
+        margin:0;
+        color:var(--muted);
+        font-size:0.75rem;
     }
 
-    /* MODAL STYLING (Detalhes do Filme) */
-    .modal {
-      display: none; 
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
-      align-items: center;
-      justify-content: center;
+    /* MODAL */
+    .modal{
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.8);
+        backdrop-filter:blur(5px);
+        justify-content:center;
+        align-items:center;
+        z-index:100;
     }
-
-    .modal-content {
-      background-color: var(--panel);
-      padding: 20px;
-      border-radius: 15px;
-      max-width: 800px;
-      width: 90%;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-      border: 1px solid var(--glass);
-      position: relative;
+    .modal-content{
+        background:var(--panel);
+        padding:20px;
+        border-radius:12px;
+        max-width:800px;
+        width:90%;
+        display:flex;
+        gap:20px;
+        position:relative;
     }
-    
-    .modal-close {
-        color: var(--muted);
-        font-size: 30px;
-        font-weight: bold;
-        position: absolute;
-        top: 10px;
-        right: 25px;
-        cursor: pointer;
-        transition: color 0.2s;
+    .modal-close{
+        position:absolute;
+        top:10px;
+        right:20px;
+        font-size:28px;
+        cursor:pointer;
+        color:var(--muted);
     }
-    .modal-close:hover,
-    .modal-close:focus {
-        color: var(--accent);
-        text-decoration: none;
+    .modal-close:hover{
+        color:var(--accent);
     }
-
-    .modal-poster {
-      flex: 0 0 200px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    .modal-poster img{
+        width:200px;
+        aspect-ratio:2/3;
+        border-radius:8px;
     }
-    .modal-poster img {
-      width: 100%;
-      display: block;
-      aspect-ratio: 2/3;
+    .add-btn{
+        margin-top:20px;
+        padding:10px 20px;
+        background:var(--accent);
+        border:none;
+        border-radius:8px;
+        color:white;
+        cursor:pointer;
     }
-
-    .modal-details {
-      flex-grow: 1;
-    }
-
-    .modal-details h2 {
-      margin-top: 0;
-      font-size: 1.8rem;
-      color: var(--accent);
-      line-height: 1.2;
-    }
-
-    .modal-details p {
-      margin: 5px 0;
-      font-size: 0.9rem;
-    }
-
-    .modal-details .overview {
-      margin-top: 15px;
-      line-height: 1.5;
-      color: var(--muted);
-      max-height: 180px;
-      overflow-y: auto;
-    }
-
-    .modal-details .genres {
-      font-weight: 600;
-      color: var(--white);
-      margin-bottom: 10px;
-    }
-
-    .modal-details .rating {
-      font-size: 1.1rem;
-      color: gold;
-      font-weight: 600;
-    }
-
-    .modal-details .add-btn {
-      background: var(--accent);
-      color: var(--white);
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 15px;
-      transition: background 0.2s;
-    }
-    .modal-details .add-btn:hover {
-        background: var(--accent-2);
-    }
-
-    @media (max-width: 768px) {
-        .modal-content {
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-        }
-        .modal-poster {
-            flex: none;
-            width: 150px;
-        }
-        .modal-details {
-            text-align: center;
-        }
-        .modal-details h2 {
-            font-size: 1.5rem;
-        }
+    .add-btn:hover{
+        background:var(--accent-2);
     }
   </style>
 </head>
 <body>
 
 <header>
-    <!-- Usando window.location.pathname para navegação no iframe -->
-    <a href="javascript:void(0)" onclick="window.location.pathname = '/home.html';" class="logo">PopScreen</a>
+    <a href="home.html" class="logo">PopScreen</a>
     <div class="nav-links">
-        <a href="javascript:void(0)" onclick="window.location.pathname = '/lista.html';">Minha Lista</a>
+        <a href="lista.html">Minha Lista</a>
     </div>
 </header>
 
 <main>
     <section class="section">
         <div class="section-header">
-            <h2 id="catalogTitle" class="section-title">Catálogo Completo</h2>
-            <!-- Usando window.location.pathname para navegação no iframe -->
-            <a href="javascript:void(0)" onclick="window.location.pathname = '/home.html';" class="back-btn">
-                &#8592; Voltar
-            </a>
+            <h2 id="catalogTitle">Catálogo Completo</h2>
+            <a href="home.html" class="back-btn">← Voltar</a>
         </div>
+
         <div id="movieGrid" class="movie-grid">
             <div class="empty">Carregando filmes...</div>
         </div>
     </section>
 </main>
 
-<!-- Modal de Detalhes -->
+<!-- MODAL -->
 <div id="movieModal" class="modal">
     <div class="modal-content">
         <span class="modal-close">&times;</span>
+
         <div class="modal-poster">
-            <img id="modalImg" src="" alt="Poster do Filme">
+            <img id="modalImg">
         </div>
+
         <div class="modal-details">
             <h2 id="modalTitle"></h2>
-            <p><span id="modalYear"></span> | <span id="modalRuntime"></span> | <span id="modalLanguage"></span></p>
-            <p class="genres" id="modalGenres"></p>
-            <p class="rating">Nota: <span id="modalRating"></span></p>
-            <p class="overview" id="modalOverview"></p>
+            <p><span id="modalYear"></span> • <span id="modalGenres"></span></p>
+            <p>Nota: <span id="modalRating"></span></p>
+            <p id="modalOverview" class="overview"></p>
+
             <button id="addToListBtn" class="add-btn">Adicionar à Minha Lista</button>
         </div>
     </div>
 </div>
 
 <script>
-    // URL Base de Fallback: usada se o fetch relativo falhar (como acontece com o protocolo file://)
-    const FALLBACK_API_BASE_URL = 'http://localhost:5000'; 
+    const FALLBACK = "http://localhost:5000";
+    const TMDB_API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyOGY1MDBmNjYyMmE0ZWIwYmVhZjk3OTkwZTcwOWEzZSIsIm5iZiI6MTc2Mzc0NzAyMy45NzEsInN1YiI6IjY5MjBhNGNmNGNiYjY1YTk1NTA1OGU0ZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.2m0_5x9WXUM8HzK6stU4dYR8sI_HRz0trb2Z5e97vmA";
+    const TMDB = "https://api.themoviedb.org/3";
+    const IMAGE = "https://image.tmdb.org/t/p/w500";
 
-    // Função auxiliar para fazer fetch à sua API Flask
-    async function fetchFlaskAPI(endpoint, attemptAbsolute = false) {
-        let url = endpoint;
-        
-        // Se for o segundo ou terceiro argumento, tenta a URL absoluta
-        if (attemptAbsolute) {
-            url = `${FALLBACK_API_BASE_URL}${endpoint}`;
-        }
-        
-        try {
-            const response = await fetch(url); 
-            if (!response.ok) {
-                // Em caso de erro HTTP (ex: 404, 500)
-                console.error(`Erro de HTTP na API Local: ${response.status} para o endpoint ${url}`);
-                throw new Error(`Falha ao buscar dados: ${response.status}`);
-            }
-            return response.json();
-        } catch (error) {
-            // Se falhar e ainda não tentamos a URL absoluta, tenta o fallback
-            if (!attemptAbsolute) {
-                console.warn(`Fetch relativo falhou para ${endpoint}. Tentando fallback absoluto (${FALLBACK_API_BASE_URL})...`);
-                // Chamada recursiva com attemptAbsolute = true
-                return fetchFlaskAPI(endpoint, true); 
-            }
-            
-            // Se falhar mesmo com a URL absoluta, registra o erro final
-            console.error("Erro final ao buscar dados da API Flask:", error);
-            // Retorna um array vazio em caso de falha total para que a UI não quebre
-            return []; 
+    async function api(endpoint){
+        try{
+            const r = await fetch(FALLBACK + endpoint);
+            if(!r.ok) throw 0;
+            return await r.json();
+        }catch{
+            const r = await fetch(FALLBACK + endpoint);
+            return await r.json();
         }
     }
 
-    // Função para enriquecer os dados do filme com o placeholder
-    function enrichMovieFromResult(movie) {
-         // Assume que os dados vêm da sua API Flask (CSV)
-         return {
-            id: movie.id,
-            titulo: movie.titulo,
-            year: movie.ano || movie.year || 'N/A', 
-            genres: movie.genero ? movie.genero.split(', ').map(g => g.trim()) : [],
-            vote_average: movie.nota ? movie.nota.toFixed(1) : 'N/A',
-            img: movie.img || 'https://placehold.co/220x320/1f1f1f/ffffff?text=SEM+POSTER', 
-            overview: movie.overview || "Sem sinopse disponível.",
-            runtime: movie.runtime || "N/A",
-            language: movie.language || "N/A"
-        };
+    async function tmdbFetch(path, page = 1){
+        const url = `${TMDB}${path}?language=pt-BR&page=${page}`;
+
+        const r = await fetch(url, {
+            headers: {
+                "Authorization": `Bearer ${TMDB_API_KEY}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const json = await r.json();
+        return json.results || [];
     }
 
-    // Função para criar o card do filme
-    function makeCard(filme) {
-        const card = document.createElement('div');
-        card.className = 'movie-card';
-        card.addEventListener('click', () => showMovieModal(filme));
+    // CARD
+    function makeCard(f){
+        const div = document.createElement("div");
+        div.className = "movie-card";
 
-        const genresText = filme.genres.length > 0 ? filme.genres.slice(0, 2).join(', ') : 'Sem Gênero';
-
-        card.innerHTML = `
-            <img 
-                src="${filme.img}" 
-                alt="${filme.titulo}" 
-                loading="lazy"
-                onerror="this.onerror=null; this.src='https://placehold.co/220x320/1f1f1f/ffffff?text=SEM+POSTER';"
-            >
+        div.innerHTML = `
+            <img src="${f.img}" onerror="this.src='https://placehold.co/300x450?text=SEM+POSTER'">
             <div class="movie-info">
-                <h4>${filme.titulo}</h4>
-                <p>${filme.year} | ${genresText}</p>
+                <h4>${f.titulo}</h4>
+                <p>${f.year} • ${f.genres.join(", ")}</p>
             </div>
         `;
-        return card;
+
+        div.onclick = () => openModal(f);
+        return div;
     }
 
+    // MODAL
+    function openModal(movie){
+        document.getElementById("modalTitle").textContent = movie.titulo;
+        document.getElementById("modalImg").src = movie.img;
+        document.getElementById("modalYear").textContent = movie.year;
+        document.getElementById("modalGenres").textContent = movie.genres.join(" | ");
+        document.getElementById("modalRating").textContent = movie.vote_average;
+        document.getElementById("modalOverview").textContent = movie.overview;
 
-    /* ---------------------------\
-       CARREGAMENTO DO CATÁLOGO
-    -----------------------------*/
+        document.getElementById("addToListBtn").onclick = () => addToList(movie);
 
-    // Função principal para carregar o catálogo (filtrado ou completo)
-    async function loadCatalog() {
-        const grid = document.getElementById('movieGrid');
-        const titleElement = document.getElementById('catalogTitle');
-        const urlParams = new URLSearchParams(window.location.search);
-        const generoFiltro = urlParams.get('genero');
-        const tituloPersonalizado = urlParams.get('title');
+        document.getElementById("movieModal").style.display = "flex";
+    }
 
-        grid.innerHTML = '<div class="empty">Carregando filmes...</div>';
-        
-        let endpoint = '/api/recomendacoes'; // Endpoint base
-        
-        // Se houver filtro, adiciona-o ao endpoint
-        if (generoFiltro) {
-            endpoint += `?generos=${generoFiltro}`;
-            titleElement.textContent = tituloPersonalizado ? 
-                                       `Catálogo: ${tituloPersonalizado}` : 
-                                       `Catálogo: ${generoFiltro}`;
-        } else {
-            // Se não houver filtro, carrega o catálogo completo
-            titleElement.textContent = "Catálogo Completo";
+    document.querySelector(".modal-close").onclick = () =>
+        document.getElementById("movieModal").style.display = "none";
+
+    window.onclick = e => {
+        if(e.target.id === "movieModal")
+            document.getElementById("movieModal").style.display = "none";
+    };
+
+    // LISTA
+    function addToList(f){
+        let lista = JSON.parse(localStorage.getItem("listaFilmes") || "[]");
+
+        if(!lista.some(x => x.id === f.id)){
+            lista.push(f);
+            localStorage.setItem("listaFilmes", JSON.stringify(lista));
         }
+    }
 
-        // Usando a função fetch com lógica de fallback
-        const filmes = await fetchFlaskAPI(endpoint); 
-        
+    // --------- CARREGAR CATÁLOGO COMPLETO (CSV + TMDB) ----------
+    async function loadCatalog(){
+        const grid = document.getElementById("movieGrid");
+        grid.innerHTML = '<div class="empty">Carregando...</div>';
+
+        const url = new URLSearchParams(location.search);
+        const filtro = url.get("genero");
+
+        let endpoint = "/api/catalogo";
+        if(filtro) endpoint += "?generos=" + filtro;
+
+        // CARREGAR CSV
+        let filmesCSV = await api(endpoint);
+        filmesCSV = filmesCSV.map(f => ({
+            id: "csv-" + f.id,
+            titulo: f.titulo,
+            img: f.img || "https://placehold.co/300x450",
+            year: f.ano || "----",
+            genres: f.genero ? f.genero.split(",") : [],
+            vote_average: f.nota || "N/A",
+            overview: f.overview || "Sem sinopse."
+        }));
+
+        let tmdb1 = await tmdbFetch("/movie/popular", 1);
+        let tmdb2 = await tmdbFetch("/movie/top_rated", 1);
+
+        const filmesTMDB = [...tmdb1, ...tmdb2].map(f => ({
+            id: "tmdb-" + f.id,
+            titulo: f.title,
+            img: f.poster_path ? IMAGE + f.poster_path : "https://placehold.co/300x450",
+            year: f.release_date ? f.release_date.slice(0,4) : "----",
+            genres: [],
+            vote_average: f.vote_average,
+            overview: f.overview
+        }));
+
+        // COMBINAR CSV + TMDB
+        let final = [...filmesCSV, ...filmesTMDB];
+
+        // 👇 Limita a 1000 filmes sem quebrar nada
+        final = final.slice(0, 1000);
+
         grid.innerHTML = "";
-        if (filmes.length === 0) {
-            grid.innerHTML = `<div class="empty">Nenhum filme encontrado para o critério atual. Certifique-se de que o servidor Flask esteja rodando em ${FALLBACK_API_BASE_URL}.</div>`;
-            return;
-        }
-
-        filmes.forEach(f => {
-            const enriched = enrichMovieFromResult(f);
-            grid.appendChild(makeCard(enriched));
-        });
+        final.forEach(f => grid.appendChild(makeCard(f)));
     }
 
-
-    /* ---------------------------\
-       MODAL E EVENTOS
-    -----------------------------*/
-
-    // Função para exibir o modal de detalhes
-    function showMovieModal(filme) {
-        document.getElementById('modalTitle').textContent = filme.titulo;
-        document.getElementById('modalImg').src = filme.img;
-        document.getElementById('modalImg').alt = `Poster de ${filme.titulo}`;
-        document.getElementById('modalYear').textContent = filme.year;
-        document.getElementById('modalRuntime').textContent = filme.runtime || 'N/A';
-        document.getElementById('modalLanguage').textContent = filme.language || 'N/A';
-        document.getElementById('modalGenres').textContent = filme.genres.join(' | ');
-        document.getElementById('modalRating').textContent = filme.vote_average;
-        document.getElementById('modalOverview').textContent = filme.overview;
-        
-        // Configurar botão de adicionar à lista
-        const addBtn = document.getElementById('addToListBtn');
-        addBtn.onclick = () => addToMyList(filme);
-        
-        document.getElementById('movieModal').style.display = 'flex';
-    }
-
-    // Função para adicionar à lista (usa o localStorage como padrão)
-    function addToMyList(filme) {
-        let lista = JSON.parse(localStorage.getItem('listaFilmes') || '[]');
-        
-        // Previne duplicatas
-        if (!lista.some(f => f.id === filme.id)) {
-            lista.push(filme);
-            localStorage.setItem('listaFilmes', JSON.stringify(lista));
-            // Substituindo alert por um console.log (pois alert é proibido)
-            console.log('Filme adicionado à sua lista!');
-        } else {
-             console.log('Este filme já está na sua lista!');
-        }
-    }
-
-
-    // Eventos do Modal
-    document.querySelector('.modal-close').onclick = () => {
-        document.getElementById('movieModal').style.display = 'none';
-    }
-    window.onclick = function(event) {
-        const modal = document.getElementById('movieModal');
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    /* ---------------------------\
-       INICIALIZAÇÃO
-    -----------------------------*/
-    document.addEventListener('DOMContentLoaded', () => {
-        loadCatalog();
-    });
-
+    loadCatalog();
 </script>
-</body>
-</html>

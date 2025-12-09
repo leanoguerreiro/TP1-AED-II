@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 import sys
 import os
@@ -74,11 +75,13 @@ ARQUIVO_DADOS = encontrar_csv()
 sistema = None
 
 
-def inicializar_sistema(dados):
+def inicializar_sistema(dados=None):
     """Carrega o sistema de recomendação na primeira requisição"""
-    global sistema
+    global sistema, ARQUIVO_DADOS
     if sistema is None:
         print("🎬 Inicializando sistema de recomendação...")
+        if dados is None:
+            dados = ARQUIVO_DADOS
         sistema = SistemaRecomendacao(dados)
         sistema.carregar_dados()
         print("✅ Sistema pronto!")
@@ -91,7 +94,7 @@ def inicializar_sistema(dados):
 def status():
     """Verifica se a API está funcionando"""
     try:
-        s = inicializar_sistema()
+        s = inicializar_sistema(ARQUIVO_DADOS)
         total = len(s.mapa_id_filme)
         return jsonify({
             'status': 'online',
@@ -100,6 +103,22 @@ def status():
         })
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+@app.route('/')
+def index():
+    return send_from_directory('.', 'home.html')
+
+@app.route('/catalogo.html')
+def catalogo():
+    return send_from_directory('.', 'catalogo.html')
+
+@app.route('/lista.html')
+def lista():
+    return send_from_directory('.', 'lista.html')
+
+@app.route('/home.html')
+def home():
+    return send_from_directory('.', 'home.html')
 
 
 @app.route('/api/filmes', methods=['GET'])
@@ -232,9 +251,9 @@ def recomendacoes_geral():
                 'id': f.id,
                 'titulo': f.titulo,
                 'ano': f.ano,
-                'genero': f.genero,
+                'genero': f.genero,   # string "Ação|Fantasia"
                 'nota': f.nota,
-                'img': f'https://placehold.co/220x330/1e0730/a855f7?text={f.titulo[:15].replace(" ", "+")}'
+                'img': getattr(f, 'img', f'https://placehold.co/220x330/1e0730/a855f7?text={f.titulo[:15].replace(" ", "+")}')
             })
 
         return jsonify(resultado)
@@ -337,7 +356,30 @@ def estatisticas():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/catalogo', methods=['GET'])
+def catalogo_completo():
+    """Retorna TODOS os filmes do CSV sem limite"""
+    try:
+        s = inicializar_sistema()
+        filmes = s.avl.travessia_em_ordem(s.avl_root)
 
+        resultado = []
+        for f in filmes:
+            resultado.append({
+                'id': f.id,
+                'titulo': f.titulo,
+                'ano': f.ano,
+                'genero': f.genero,
+                'nota': f.nota,
+                'img': getattr(f, 'img', f'https://placehold.co/220x330/1e0730/a855f7?text={f.titulo[:15].replace(" ", "+")}'),
+                'overview': getattr(f, 'overview', "Sem sinopse."),
+            })
+
+        return jsonify(resultado)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # ==================== EXECUÇÃO ====================
 
