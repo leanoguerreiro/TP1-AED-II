@@ -3,24 +3,66 @@ import sys
 from collections import deque
 import difflib
 
+# imagens 
+def create_poster_placeholder(title):
+    safe = "".join(c if c.isalnum() or c == ' ' else '' for c in (title or "")).strip().replace(' ', '+')
+    if not safe:
+        safe = "PopScreen"
+    return f"https://placehold.co/500x750/1e0730/a855f7?text={safe}"
+
+# Mapa (inglês -> português). 
+GENRE_MAP_PT = {
+    "Action": "Ação",
+    "Adventure": "Aventura",
+    "Comedy": "Comédia",
+    "Drama": "Drama",
+    "Animation": "Animação",
+    "Fantasy": "Fantasia",
+    "Horror": "Terror",
+    "Science Fiction": "Ficção Científica",
+    "Foreign": "Estrangeiro",
+    "Crime": "Crime",
+    "Thriller": "Suspense",
+    "Mystery": "Mistério",
+    "Romance": "Romance",
+    "Documentary": "Documentário",
+    "Family": "Família",
+    "Western": "Faroeste",
+    "History": "História",
+    "Music": "Música",
+    "War": "Guerra"
+}
 
 # --- DEFINIÇÃO DAS ESTRUTURAS DE DADOS ---
 
 class Filme:
     """Classe para armazenar os dados de um filme."""
 
-    def __init__(self, id, titulo, ano, genero, nota):
+    def __init__(self, id, titulo, ano, genero, nota, img=None):
         self.id = int(id)
         self.titulo = str(titulo)
-        self.ano = int(ano)
-        self.genero = str(genero)
-        self.nota = float(nota)
+        try:
+            self.ano = int(str(ano)[:4])  # ano = primeiros 4 dígitos
+        except:
+            self.ano = 0
+        # Normaliza e traduz gêneros caso estejam em inglês (aceita '|' como separador)
+        if isinstance(genero, str):
+            # separa por pipe ou vírgula
+            parts = [g.strip() for g in genero.replace(',', '|').split('|') if g.strip()]
+            parts_pt = []
+            for p in parts:
+                parts_pt.append(GENRE_MAP_PT.get(p, p))  # traduz se houver
+            self.genero = "|".join(parts_pt)
+        else:
+            self.genero = str(genero)
 
-    def __repr__(self):
-        return f"Filme(id={self.id}, titulo='{self.titulo}', ano={self.ano}, nota={self.nota})"
+        try:
+            self.nota = float(nota)
+        except:
+            self.nota = 0.0
 
-    def __str__(self):
-        return f'ID: {self.id:03d} | Título: "{self.titulo}" | Ano: {self.ano} | Gênero: {self.genero} | Nota: {self.nota:.1f}'
+        # imagem (url). Se não fornecida, gera placeholder
+        self.img = img or create_poster_placeholder(self.titulo)
 
 
 class NoAVL:
@@ -227,8 +269,10 @@ class SistemaRecomendacao:
         ids_vistos = set()
 
         with open(self.arquivo_csv, mode='r', encoding='utf-8') as f:
-            leitor = csv.reader(f)
+            leitor = csv.reader(f, delimiter=',', quotechar='"', escapechar='\\')
             next(leitor, None)  # Pula header
+            linha_debug = next(leitor, None)
+            print("Primeira linha processável:", linha_debug)
 
             for linha in leitor:
                 try:
@@ -237,14 +281,18 @@ class SistemaRecomendacao:
                     ids_vistos.add(movie_id)
 
                     titulo = linha[3]
-                    genero = linha[4]
+                    genero = linha[4] if len(linha) > 4 else ""
                     try:
-                        nota = float(linha[5])
-                    except (ValueError, IndexError):
+                        nota = float(linha[5]) if len(linha) > 5 else 0.0
+                    except:
                         nota = 0.0
-                    ano = linha[7]
+                    ano = linha[6] if len(linha) > 6 else ""
 
-                    filme = Filme(movie_id, titulo, ano, genero, nota)
+                    # Se no seu CSV houver um campo de imagem, use-o; caso contrário, passe None
+                    img_url = None
+                    # Se houver uma coluna com poster_path no CSV, substitua img_url = linha[<index>]
+
+                    filme = Filme(movie_id, titulo, ano, genero, nota, img=img_url)
 
                     # Popula estruturas
                     self.avl_root = self.avl.inserir(self.avl_root, filme)
